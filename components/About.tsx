@@ -13,15 +13,17 @@ const CLUSTER = [
 ];
 
 const STATS = [
-  { value: '48+', label: 'Projects shipped' },
-  { value: '12',  label: 'Countries reached' },
-  { value: '100%', label: 'Client retention' },
+  { value: '48+', target: 48, suffix: '+', label: 'Projects shipped' },
+  { value: '12',  target: 12, suffix: '',  label: 'Countries reached' },
+  { value: '100%', target: 100, suffix: '%', label: 'Client retention' },
 ];
 
 export default function About() {
   const mountRef  = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const statRefs  = useRef<HTMLDivElement[]>([]);
+  const numRefs   = useRef<HTMLSpanElement[]>([]);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -74,11 +76,36 @@ export default function About() {
 
     statRefs.current.forEach((el, i) => {
       if (!el) return;
+      const num = numRefs.current[i];
+      const counter = { v: 0 };
       gsap.fromTo(el,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: i * 0.15, scrollTrigger: { trigger: el, start: 'top 85%' } }
+        {
+          opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: i * 0.15,
+          scrollTrigger: { trigger: el, start: 'top 85%' },
+          onStart: () => {
+            gsap.to(counter, {
+              v: STATS[i].target,
+              duration: 1.6,
+              ease: 'power2.out',
+              onUpdate: () => {
+                if (num) num.textContent = Math.round(counter.v) + STATS[i].suffix;
+              },
+            });
+          },
+        }
       );
     });
+
+    if (headingRef.current) {
+      gsap.fromTo(headingRef.current.querySelectorAll('.reveal-line > span'),
+        { yPercent: 110 },
+        {
+          yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.12,
+          scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
+        }
+      );
+    }
 
     const clock = new THREE.Clock();
     let id: number;
@@ -106,8 +133,13 @@ export default function About() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
           <p className="section-tag">The Recipe</p>
-          <h2 className="text-4xl lg:text-5xl font-black tracking-tight leading-none mb-6">
-            Small batch.<br />No fillers.
+          <h2 ref={headingRef} className="text-4xl lg:text-5xl font-black tracking-tight leading-[1.05] mb-6">
+            <span className="reveal-line block overflow-hidden">
+              <span className="inline-block">Small batch.</span>
+            </span>
+            <span className="reveal-line block overflow-hidden">
+              <span className="inline-block">No fillers.</span>
+            </span>
           </h2>
           <p className="text-[1rem] leading-loose text-ink-mid max-w-md mb-10">
             We are a boutique digital agency that believes every brand deserves premium packaging. We work with founders and CMOs who are done with bloated agencies and want a tight, talented team that ships fast and sweats the details.
@@ -119,7 +151,10 @@ export default function About() {
                 ref={(el) => { if (el) statRefs.current[i] = el; }}
                 className="opacity-0"
               >
-                <span className="block text-4xl font-black text-accent leading-none mb-1">{s.value}</span>
+                <span
+                  ref={(el) => { if (el) numRefs.current[i] = el; }}
+                  className="block text-4xl font-black text-accent leading-none mb-1 tabular-nums"
+                >0{s.suffix}</span>
                 <p className="text-[0.75rem] tracking-[0.1em] uppercase text-ink-mid">{s.label}</p>
               </div>
             ))}

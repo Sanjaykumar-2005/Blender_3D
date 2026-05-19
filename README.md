@@ -1,5 +1,7 @@
 # SHELF™ — Premium Agency
 
+![SHELF — hero](./public/preview.png)
+
 An agency website where services are presented as **supermarket product packaging in 3D**, rendered in real-time with Three.js + WebGL inside a Next.js app.
 
 ## Tech Stack

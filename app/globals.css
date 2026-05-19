@@ -11,8 +11,19 @@
     color: #1a1612;
     overflow-x: hidden;
   }
+  body.has-custom-cursor,
+  body.has-custom-cursor a,
+  body.has-custom-cursor button,
+  body.has-custom-cursor input,
+  body.has-custom-cursor textarea {
+    cursor: none;
+  }
   * {
     box-sizing: border-box;
+  }
+  ::selection {
+    background: #c8401a;
+    color: #f5f0e8;
   }
 }
 
@@ -21,9 +32,123 @@
     @apply inline-block text-[0.7rem] tracking-[0.25em] uppercase text-accent border border-accent px-3 py-1 mb-5;
   }
   .btn-primary {
-    @apply inline-block px-8 py-3.5 text-[0.85rem] font-bold tracking-[0.08em] uppercase no-underline bg-accent text-white border-2 border-accent transition-all duration-200 cursor-pointer hover:bg-ink hover:border-ink;
+    @apply relative inline-block px-8 py-3.5 text-[0.85rem] font-bold tracking-[0.08em] uppercase no-underline bg-accent text-white border-2 border-accent transition-all duration-300 cursor-pointer overflow-hidden;
   }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #1a1612;
+    transform: translateY(101%);
+    transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 0;
+  }
+  .btn-primary:hover::before { transform: translateY(0); }
+  .btn-primary > * { position: relative; z-index: 1; }
+  .btn-primary:hover { border-color: #1a1612; }
+
   .btn-ghost {
-    @apply inline-block px-8 py-3.5 text-[0.85rem] font-bold tracking-[0.08em] uppercase no-underline bg-transparent text-ink border-2 border-ink transition-all duration-200 cursor-pointer hover:bg-ink hover:text-cream;
+    @apply relative inline-block px-8 py-3.5 text-[0.85rem] font-bold tracking-[0.08em] uppercase no-underline bg-transparent text-ink border-2 border-ink transition-all duration-300 cursor-pointer overflow-hidden;
   }
+  .btn-ghost::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #1a1612;
+    transform: translateY(101%);
+    transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 0;
+  }
+  .btn-ghost:hover::before { transform: translateY(0); }
+  .btn-ghost:hover { color: #f5f0e8; }
+  .btn-ghost > * { position: relative; z-index: 1; }
+}
+
+@layer utilities {
+  .reveal-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .reveal-word > span {
+    display: inline-block;
+    will-change: transform;
+  }
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  background: #c8401a;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: normal;
+}
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid #1a1612;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  backdrop-filter: invert(0);
+}
+.cursor-ring.is-hover {
+  width: 60px;
+  height: 60px;
+  background: rgba(200, 64, 26, 0.15);
+  border-color: #c8401a;
+}
+@media (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none; }
+}
+
+.process-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.45), transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  z-index: 0;
+}
+
+.float-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none;
+  will-change: transform;
 }
